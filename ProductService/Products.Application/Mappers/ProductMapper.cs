@@ -5,25 +5,30 @@ namespace Products.Application.Mappers;
 
 public static class ProductMapper
 {
-    public static Product MapToDomain(ProductCreateRequestDto productCreateRequestDto)
+    public static Product MapToDomain(ProductCreateRequestDto dto)
     {
-        return new Product
+        var product = new Product(
+            name: dto.Name,
+            description: dto.Description,
+            imageUrl: dto.ImageUrl,
+            price: dto.Price,
+            category: new Category(dto.Category),
+            brand: new Brand(dto.Brand)
+        );
+
+        if (dto.Tags != null)
         {
-            Id = Guid.NewGuid(),
-            Name = productCreateRequestDto.Name,
-            Description = productCreateRequestDto.Description,
-            ImageUrl = productCreateRequestDto.ImageUrl,
-            Price = productCreateRequestDto.Price,
-            Category = productCreateRequestDto.Category,
-            Brand = productCreateRequestDto.Brand,
-            Tags = productCreateRequestDto.Tags?.Select(tag => new ProductTag { Id = Guid.NewGuid(), Name = tag }).ToList() ?? new List<ProductTag>(),
-            Attributes = productCreateRequestDto.Attributes?.Select(attr => new ProductAttribute
-            {
-                Id = Guid.NewGuid(),
-                Key = attr.Key,
-                Value = attr.Value
-            }).ToList() ?? new List<ProductAttribute>()
-        };
+            foreach (var tag in dto.Tags)
+                product.AddTag(new ProductTag(tag));
+        }
+
+        if (dto.Attributes != null)
+        {
+            foreach (var attr in dto.Attributes)
+                product.AddAttribute(new ProductAttribute(attr.Key, attr.Value));
+        }
+
+        return product;
     }
 
     public static ProductResponseDto MapToDto(Product product)
@@ -34,29 +39,34 @@ public static class ProductMapper
                 product.Description,
                 product.ImageUrl,
                 product.Price,
-                product.Category,
-                product.Brand
+                product.Category.Name,
+                product.Brand.Name
             );
     }
 
-    public static Product MapToDomain(ProductUpdateRequestDto productUpdateRequestDto)
+    public static Product MapToDomain(ProductUpdateRequestDto dto)
     {
-        return new Product
+        var product = new Product(
+            name: dto.Name,
+            description: dto.Description,
+            imageUrl: dto.ImageUrl,
+            price: dto.Price,
+            category: new Category(dto.Category),
+            brand: new Brand(dto.Brand)
+        );
+
+        if (dto.Tags != null)
         {
-            Id = Guid.NewGuid(),
-            Name = productUpdateRequestDto.Name,
-            Description = productUpdateRequestDto.Description,
-            ImageUrl = productUpdateRequestDto.ImageUrl,
-            Price = productUpdateRequestDto.Price,
-            Category = productUpdateRequestDto.Category,
-            Brand = productUpdateRequestDto.Brand,
-            Tags = productUpdateRequestDto.Tags?.Select(tag => new ProductTag { Id = Guid.NewGuid(), Name = tag }).ToList() ?? new List<ProductTag>(),
-            Attributes = productUpdateRequestDto.Attributes?.Select(attr => new ProductAttribute
-            {
-                Id = Guid.NewGuid(),
-                Key = attr.Key,
-                Value = attr.Value
-            }).ToList() ?? new List<ProductAttribute>()
-        };
+            foreach (var tag in dto.Tags)
+                product.AddTag(new ProductTag(tag));
+        }
+
+        if (dto.Attributes != null)
+        {
+            foreach (var attr in dto.Attributes)
+                product.AddAttribute(new ProductAttribute(attr.Key, attr.Value));
+        }
+
+        return product;
     }
 }

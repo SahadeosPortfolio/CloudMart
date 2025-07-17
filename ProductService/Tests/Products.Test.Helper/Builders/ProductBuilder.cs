@@ -4,18 +4,13 @@ namespace Products.Test.Helper.Builders;
 
 public class ProductBuilder
 {
-    private Guid _id = Guid.NewGuid();
     private string _name = "Default Product Name";
     private string _description = "Default Product Description";
     private string _imageUrl = "http://example.com/image.jpg";
     private decimal _price = 9.99M;
     private string _category = "Default Category";
     private string _brand = "Default Brand";
-    public ProductBuilder WithId(Guid id)
-    {
-        _id = id;
-        return this;
-    }
+
     public ProductBuilder WithName(string name)
     {
         _name = name;
@@ -48,15 +43,11 @@ public class ProductBuilder
     }
     public Product Build()
     {
-        return new Product
-        {
-            Id = _id,
-            Name = _name,
-            Description = _description,
-            ImageUrl = _imageUrl,
-            Price = _price,
-            Category = _category,
-            Brand = _brand
-        };
+        var category = new Category(_category);
+        var brand = new Brand(_brand);
+
+        var product = new Product(_name, _description, _imageUrl, _price, category, brand);
+
+        return product;
     }
 }

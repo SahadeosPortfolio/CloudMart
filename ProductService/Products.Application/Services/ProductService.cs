@@ -71,7 +71,7 @@ public class ProductService : IProductService
         if (product is null || product.IsDeleted)
             return false;
 
-        product.IsDeleted = true;
+        product.MarkAsDeleted();
         await _productRepository.UpdateAsync(product);
 
         return true;

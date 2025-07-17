@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Products.Domain.Entities;
 using Products.Infrastructure.Data;
-using System.Collections.Generic;
+using Products.Test.Helper.Builders;
 
 namespace Products.Integration.Tests.TestUtilities;
 
@@ -67,17 +67,15 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
     private Product CreateProduct(string name, string category, string brand, string imageUrl, decimal price)
     {
-        return new Product
-        {
-            Id = Guid.NewGuid(),
-            Name = name,
-            Description = $"Description for {name}",
-            Price = price,
-            Category = category,
-            Brand = brand,
-            ImageUrl = imageUrl
-        };
-    } 
+        return new ProductBuilder()
+            .WithName(name)
+            .WithDescription($"Description for {name}")
+            .WithPrice(price)
+            .WithCategory(category)
+            .WithBrand(brand)
+            .WithImageUrl(imageUrl)
+            .Build();
+    }
 
     #endregion
 }

@@ -11,7 +11,6 @@ using Products.Domain.Interfaces;
 using Products.Infrastructure.Data;
 using Products.Infrastructure.Repositories;
 using Serilog;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 

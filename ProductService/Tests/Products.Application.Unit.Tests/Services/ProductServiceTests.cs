@@ -3,6 +3,7 @@ using Products.Application.Dtos;
 using Products.Application.Services;
 using Products.Domain.Entities;
 using Products.Domain.Interfaces;
+using Products.Test.Helper.Builders;
 
 namespace Products.Application.Unit.Tests.Services;
 
@@ -22,8 +23,10 @@ public class ProductServiceTests
     public async Task GetByIdAsync_ShouldReturnProduct_WhenProductExists()
     {
         // Arrange
-        var productId = Guid.NewGuid();
-        var expectedProduct = new Product { Id = productId, Name = "Test Product" };
+        var expectedProduct = new ProductBuilder().WithName("testProductBrand")
+                                                  .Build();
+        var productId = expectedProduct.Id;
+
         _productRepositoryMock.Setup(repo => repo.GetByIdAsync(productId)).ReturnsAsync(expectedProduct);
         // Act
         var result = await _productService.GetByIdAsync(productId);
@@ -50,16 +53,14 @@ public class ProductServiceTests
     {
         // Arrange
         var productCreateRequestDto = new ProductCreateRequestDto("TestProductName", "testProductDescription", "testImageUrl", 11.2M, "testProductCategory", "testProductBrand");
-        var createdProduct = new Product
-        {
-            Id = Guid.NewGuid(),
-            Name = productCreateRequestDto.Name,
-            Description = productCreateRequestDto.Description,
-            ImageUrl = productCreateRequestDto.ImageUrl,
-            Price = productCreateRequestDto.Price,
-            Category = productCreateRequestDto.Category,
-            Brand = productCreateRequestDto.Brand
-        };
+        var createdProduct = new ProductBuilder()
+            .WithName(productCreateRequestDto.Name)
+            .WithDescription(productCreateRequestDto.Description)
+            .WithImageUrl(productCreateRequestDto.ImageUrl)
+            .WithPrice(productCreateRequestDto.Price)
+            .WithCategory(productCreateRequestDto.Category)
+            .WithBrand(productCreateRequestDto.Brand)
+            .Build();
 
         _productRepositoryMock.Setup(repo => repo.AddAsync(It.IsAny<Product>())).ReturnsAsync(createdProduct);
         // Act
@@ -77,8 +78,8 @@ public class ProductServiceTests
         var queryParameters = new ProductQueryParameters { Page = 1, PageSize = 10 };
         var products = new List<Product>
         {
-            new Product { Id = Guid.NewGuid(), Name = "Product1" },
-            new Product { Id = Guid.NewGuid(), Name = "Product2" }
+            new ProductBuilder().WithName("Product1").Build(),
+            new ProductBuilder().WithName("Product2").Build()
         };
 
         _productRepositoryMock.Setup(repo => repo.GetAllAsync(It.IsAny<string>(),
@@ -135,8 +136,8 @@ public class ProductServiceTests
         var queryParameters = new ProductQueryParameters { Page = 1, PageSize = 10 };
         var products = new List<Product>
         {
-            new Product { Id = Guid.NewGuid(), Name = "Product1" },
-            new Product { Id = Guid.NewGuid(), Name = "Product2" }
+            new ProductBuilder().WithName("Product1").Build(),
+            new ProductBuilder().WithName("Product2").Build()
         };
 
         _productRepositoryMock.Setup(repo => repo.GetAllAsync(It.IsAny<string>(),

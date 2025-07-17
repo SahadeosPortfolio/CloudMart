@@ -30,6 +30,8 @@ public class ProductRepository : IProductRepository
         if (pageSize < 1) pageSize = 10;
 
         var query = _context.Products
+            .Include(p => p.Brand)
+            .Include(p => p.Category)
             .Include(p => p.Tags)
             .Include(p => p.Attributes)
             .AsQueryable();
@@ -45,7 +47,13 @@ public class ProductRepository : IProductRepository
 
     public async Task<Product?> GetByIdAsync(Guid id)
     {
-        var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+        var product = await _context.Products
+            .Include(p => p.Brand)
+            .Include(p => p.Category)
+            .Include(p => p.Tags)
+            .Include(p => p.Attributes)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
         if (product is null)
             throw new KeyNotFoundException($"Product with ID {id} not found.");
 
@@ -81,17 +89,18 @@ public class ProductRepository : IProductRepository
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             query = query.Where(p =>
-                p.Name.Contains(searchTerm) || p.Brand.Contains(searchTerm));
+                p.Name.Contains(searchTerm) ||
+                p.Brand.Name.Contains(searchTerm));  // p.Brand is an entity
         }
 
         if (!string.IsNullOrWhiteSpace(category))
         {
-            query = query.Where(p => p.Category == category);
+            query = query.Where(p => p.Category.Name == category);
         }
 
         if (!string.IsNullOrWhiteSpace(brand))
         {
-            query = query.Where(p => p.Brand == brand);
+            query = query.Where(p => p.Brand.Name == brand);
         }
 
         if (minPrice.HasValue)
